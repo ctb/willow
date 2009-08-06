@@ -1,0 +1,17 @@
+#! /usr/bin/env python
+import _mypath
+from wsgiref.simple_server import make_server
+
+PORT=8000
+
+from willow.view import BasicView
+from quixote.publish import Publisher
+from quixote import get_wsgi_app
+
+p = Publisher(BasicView(), display_exceptions='plain')
+p.is_thread_safe = True
+
+httpd = make_server('', PORT, get_wsgi_app())
+print 'serving on port %d' % (PORT,)
+
+httpd.serve_forever()

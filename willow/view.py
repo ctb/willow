@@ -1,7 +1,11 @@
 import pkg_resources
 pkg_resources.require('Quixote>=2.6')
+pkg_resources.require('pygr-draw>=0.5')
 
+import quixote
 from quixote.directory import Directory
+
+import pygr_draw
 
 from jinja2 import Template
 from urllib import quote_plus
@@ -38,7 +42,7 @@ class BasicView(Directory):
         return IntervalView(interval, self.nlmsa_list)
 
 class IntervalView(Directory):
-    _q_exports = ['']
+    _q_exports = ['', 'png']
 
     def __init__(self, interval, nlmsa_list):
         self.interval = interval
@@ -54,5 +58,20 @@ Interval: {{ ival.id }}[{{ ival.start }}:{{ ival.stop }}]
 {% for i, n in l %}
 {{ n }} features in nlmsa #{{ i }}<br>
 {% endfor %}
+<hr>
+Bitmap:
+<p>
+<image src='./png'>
 """
         return jinja_render(page, locals())
+
+    def png(self):
+        picture_class = pygr_draw.BitmapSequencePicture
+        pic = pygr_draw.draw_annotation_maps(self.interval,
+                                             self.nlmsa_list,
+                                             picture_class=picture_class)
+        image = pic.finalize()
+        
+        response = quixote.get_response()
+        response.set_content_type('image/png')
+        return image

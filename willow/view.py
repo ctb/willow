@@ -9,6 +9,10 @@ import pygr_draw
 
 from jinja2 import Template
 from urllib import quote_plus
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 def jinja_render(page, d):
     return Template(page).render(d).encode('latin-1', 'replace')
@@ -42,7 +46,7 @@ class BasicView(Directory):
         return IntervalView(interval, self.nlmsa_list)
 
 class IntervalView(Directory):
-    _q_exports = ['', 'png']
+    _q_exports = ['', 'png', 'json']
 
     def __init__(self, interval, nlmsa_list):
         self.interval = interval
@@ -66,6 +70,9 @@ Bitmap:
         return jinja_render(page, locals())
 
     def png(self):
+        """
+        Draw & return a png for the given interval / NLMSAs.
+        """
         picture_class = pygr_draw.BitmapSequencePicture
         pic = pygr_draw.draw_annotation_maps(self.interval,
                                              self.nlmsa_list,
@@ -75,3 +82,14 @@ Bitmap:
         response = quixote.get_response()
         response.set_content_type('image/png')
         return image
+
+    def json(self):
+        """
+        Return coordinates for blobs in JSON format.
+        """
+        picture_class = pygr_draw.PythonList
+        pic = pygr_draw.draw_annotation_maps(self.interval,
+                                             self.nlmsa_list,
+                                             picture_class=picture_class)
+        l = pic.finalize()
+        return json.dumps(l)

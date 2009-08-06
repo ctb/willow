@@ -1,2 +1,13 @@
 *.pyc
 *~
+*.pureseq
+*.seqlen
+*.NLMSAindex
+*.attrDict
+*.idDict
+*.seqDictP
+*.seqIDdict
+*.idb
+*.index
+*.size
+*.subhead

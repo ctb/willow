@@ -1,0 +1,20 @@
+#! /usr/bin/env python
+import os.path
+from pygr import seqdb, cnestedlist, annotation
+
+db = seqdb.SequenceFileDB(os.path.abspath('simple.fa'))
+
+annodb = annotation.AnnotationDB({}, db, annotationType='annot:',
+                                 sliceAttrDict=dict(id=0,
+                                                    start=1,
+                                                    stop=2,
+                                                    orientation=3))
+
+annodb.new_annotation('foo', ('seq', 0, 5000, 1))
+annodb.new_annotation('bar', ('seq', 2000, 10000, 1))
+annodb.new_annotation('baz', ('seq', 12000, 15000, 1))
+
+al = cnestedlist.NLMSA('simple_nlmsa', 'w', pairwiseMode=True)
+for k in annodb:
+    al.addAnnotation(annodb[k])
+al.build(saveSeqDict=True)

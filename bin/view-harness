@@ -1,14 +1,29 @@
 #! /usr/bin/env python
 import _mypath
-from wsgiref.simple_server import make_server
 
 PORT=8000
+
+###
 
 from willow.view import BasicView
 from quixote.publish import Publisher
 from quixote import get_wsgi_app
+from wsgiref.simple_server import make_server
 
-p = Publisher(BasicView(), display_exceptions='plain')
+###
+
+import pkg_resources
+pkg_resources.require('pygr')
+
+from pygr import seqdb, cnestedlist
+nlmsa = cnestedlist.NLMSA('simple_nlmsa')
+db = nlmsa.seqDict.prefixDict['simple']
+nlmsa_list = [nlmsa, nlmsa]
+
+###
+
+v = BasicView(db, nlmsa_list)
+p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 
 httpd = make_server('', PORT, get_wsgi_app())

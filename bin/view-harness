@@ -9,6 +9,7 @@ from willow.view import BasicView
 from quixote.publish import Publisher
 from quixote import get_wsgi_app
 from wsgiref.simple_server import make_server
+from pygr_draw.annotation import SequenceWrapperFactory
 
 ###
 
@@ -20,9 +21,13 @@ nlmsa = cnestedlist.NLMSA('simple_nlmsa')
 db = nlmsa.seqDict.prefixDict['simple']
 nlmsa_list = [nlmsa, nlmsa]
 
+wrapper_annot = SequenceWrapperFactory(color='red')
+wrapper_annot2 = SequenceWrapperFactory(color='blue')
+wrappers = [wrapper_annot, wrapper_annot2]
+
 ###
 
-v = BasicView(db, nlmsa_list)
+v = BasicView(db, nlmsa_list, wrappers)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

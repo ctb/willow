@@ -93,6 +93,7 @@ Bitmap:
         picture_class = pygr_draw.PythonList
         pic = pygr_draw.draw_annotation_maps(self.interval,
                                              self.nlmsa_list,
-                                             picture_class=picture_class)
+                                             picture_class=picture_class,
+                                             wrappers=self.wrappers)
         l = pic.finalize()
         return json.dumps(l)

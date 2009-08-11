@@ -7,6 +7,9 @@ from quixote.directory import Directory
 
 import pygr_draw
 
+import os.path
+
+import jinja2
 from jinja2 import Template
 from urllib import quote_plus
 try:
@@ -55,19 +58,15 @@ class BasicView(Directory):
         genome_name = self.genome_name
         bookmark_l = bookmarks.get_all(session, self.genome_name)
 
+        thisdir = os.path.dirname(__file__)
+        templatesdir = os.path.join(thisdir, 'templates')
+        templatesdir = os.path.abspath(templatesdir)
+        
+        loader = jinja2.FileSystemLoader(templatesdir)
+        env = jinja2.Environment(loader=loader)
+        template = env.get_template('BasicView/index.html')
 
-        page = """
-Viewing genome: {{ genome_name }}
-<p>
-Bookmarks:
-<ul>
-{% for b in bookmark_l %}
- <li> <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
-        </a><br>
-{% endfor %}
-</ul>
-"""
-        return jinja_render(page, locals())
+        return template.render(locals())
 
     def add_bookmark(self):
         request = quixote.get_request()

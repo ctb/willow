@@ -1,0 +1,9 @@
+Viewing genome: {{ genome_name }}
+<p>
+Bookmarks:
+<ul>
+{% for b in bookmark_l %}
+ <li> <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
+        </a><br>
+{% endfor %}
+</ul>

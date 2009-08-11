@@ -107,10 +107,9 @@ class BasicView(Directory):
         try:
             interval = parse_interval_string(self.db, component)
         except ValueError:
-            return "no such page"
+            return ErrorView("No such page.")
         except KeyError:
-            return "no such sequence in '%s'" % (self.genome_name)
-        # make into error component?
+            return ErrorView("No such sequence in '%s'" % (self.genome_name,))
         
         return IntervalView(interval, self.nlmsa_list, self.wrappers)
 
@@ -163,3 +162,14 @@ class IntervalView(Directory):
                                              wrappers=self.wrappers)
         l = pic.finalize()
         return json.dumps(l)
+
+class ErrorView(Directory):
+    _q_exports = ['']
+
+    def __init__(self, message):
+        self.message = message
+
+    def _q_index(self):
+        message = self.message
+        template = env.get_template('error.html')
+        return template.render(locals())

@@ -9,29 +9,19 @@ import pygr_draw
 
 import os.path
 
-import jinja2
-from jinja2 import Template
 from urllib import quote_plus
 try:
     import json
 except ImportError:
     import simplejson as json
     
-from formencode import htmlfill
-
 ###
 
 from . import bookmarks, db
 
 ###
 
-thisdir = os.path.dirname(__file__)
-templatesdir = os.path.join(thisdir, 'templates')
-templatesdir = os.path.abspath(templatesdir)
-
-loader = jinja2.FileSystemLoader(templatesdir)
-env = jinja2.Environment(loader=loader)
-
+from .web_util import env, templatesdir
 
 def parse_interval_string(db, s):
     seqname, coords = s.split(':')

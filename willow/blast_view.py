@@ -46,7 +46,12 @@ class BlastView(Directory):
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = p.communicate(">query\n" + seq)
 
-        record = blastparser.parse_string(stdout).next()
+        try:
+            record = blastparser.parse_string(stdout).next()
+        except StopIteration:
+            template = env.get_template('BlastView/no-results.html')
+            return template.render(locals())
+            
         genome_name = self.genome_name
         filepath = self.db.filepath
         

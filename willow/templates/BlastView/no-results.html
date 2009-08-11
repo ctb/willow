@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}No BLAST matches{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+<h2>No BLAST matches in genome '{{ genome_name }}'</h2>
+<!-- {{ filepath }} -->
+<blockquote>
+<i>Using {{ prog }}.</i>
+<p>
+<font color='red'>No BLAST matches found.</font>
+</blockquote>
+<a href='./'>Return to BLAST page...</a>
+<ul>
+
+{% endblock %}

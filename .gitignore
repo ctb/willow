@@ -11,3 +11,5 @@
 *.index
 *.size
 *.subhead
+simple.fa.n*
+formatdb.log

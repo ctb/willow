@@ -1,15 +1,8 @@
 sequence choice (JS) & interval selection on basic view index
 
-sequence coordinate selection within a form!
-
-bugs:
-  sequence not in alignment!
+sequence coordinate selection within a form!  jquery?
 
 pygr-draw:
-  black bar problem
-
-  png width issue
-
   text size/virt vs image coords
 
 TESTING.

@@ -50,13 +50,20 @@ def parse_interval_string(db, s):
 ###
 
 class BasicView(Directory):
-    _q_exports = ['', 'add_bookmark', 'go']
+    _q_exports = ['', 'add_bookmark', 'go', 'css']
 
     def __init__(self, genome_name, db, nlmsa_list, wrappers=None):
         self.genome_name = genome_name
         self.db = db
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
+
+    def css(self):
+        cssfile = os.path.join(templatesdir, 'thin_green_line.css')
+        
+        response = quixote.get_response()
+        response.set_content_type('text/css')
+        return open(cssfile).read()
 
     def _q_index(self):
         session = db.get_session()

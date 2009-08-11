@@ -1,12 +1,24 @@
+{% extends "base.html" %}
 {% import 'forms.html' as forms %}
 
+{% block title %}Add bookmark{% endblock %}
+
+{% block content %}
 <p>
+<h2>Add bookmark:</h2>
+<i>Bookmark a location for later use.</i>
+<p>
+<blockquote>
 <form method='POST'>
 Bookmark name: {{ forms.input('name', name) }}
 <p>
-Sequence: {{ forms.input('sequence', sequence) }}<br>
-Start: {{ forms.input('start', start) }}<br>
-Stop: {{ forms.input('stop', stop) }}<br>
+<table>
+<tr><td>Sequence:</td><td>{{ forms.input('sequence', sequence) }}</td></tr>
+<tr><td>Start:</td><td>{{ forms.input('start', start) }}</td></tr>
+<tr><td>Stop:</td><td>{{ forms.input('stop', stop) }}</td></tr>
+</table>
 <p>
 {{ forms.submit('Save bookmark') }}
 </form>
+</blockquote>
+{% endblock %}

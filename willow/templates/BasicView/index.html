@@ -1,9 +1,16 @@
-Viewing genome: {{ genome_name }}
+{% extends "base.html" %}
+
+{% block title %}Viewing {{ genome_name }}{% endblock %}
+
+{% block content %}
+<h1>Viewing genome: {{ genome_name }}</h1>
 <p>
-Bookmarks:
+<h2>Bookmarks:</h2>
 <ul>
 {% for b in bookmark_l %}
  <li> <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
-        </a><br>
+        </a> - {{ b.sequence }}:{{ b.start }}-{{ b.stop }}, {{ b.stop - b.start }} bases
+</li>
 {% endfor %}
 </ul>
+{% endblock %}

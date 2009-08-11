@@ -1,10 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Viewing interval: {{ ival.id }}:{{ ival.start }}-{{ ival.stop }}{% endblock %}
+
+{% block sidebar %}
 <a href='../'>Return to index</a>
+{% endblock %}
+
+{% block content %}
 <p>        
-Interval: {{ ival.id }}[{{ ival.start }}:{{ ival.stop }}]
-<a href='../add_bookmark?sequence={{ qp(ival.id) }}&start={{ ival.start }}&stop={{ ival.stop }}'>(bookmark)</a>
+<h2>Interval: {{ ival.id }} from {{ ival.start }} to {{ ival.stop }}</h2>
+
+<li>{{ ival.stop - ival.start }} bases </li>
+
 <p>
+<blockquote>
+<a href='../add_bookmark?sequence={{ qp(ival.id) }}&start={{ ival.start }}&stop={{ ival.stop }}'>bookmark this view</a>
+</blockquote>
+<p>
+
+<!-- <ul>
 {% for i, n in l %}
-{{ n }} features in nlmsa #{{ i }}<br>
+<li> {{ n }} features in nlmsa #{{ i }}<br>
 {% endfor %}
+</ul>
+-->
 <hr>
-<image src='./png'>
+<a href='./png'><image src='./png' width='100%'></a>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+<a href='../'>Return to index</a>
+<p>        
+Interval: {{ ival.id }}[{{ ival.start }}:{{ ival.stop }}]
+<a href='../add_bookmark?sequence={{ qp(ival.id) }}&start={{ ival.start }}&stop={{ ival.stop }}'>(bookmark)</a>
+<p>
+{% for i, n in l %}
+{{ n }} features in nlmsa #{{ i }}<br>
+{% endfor %}
+<hr>
+<image src='./png'>

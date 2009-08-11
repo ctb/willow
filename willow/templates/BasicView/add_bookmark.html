@@ -1,0 +1,12 @@
+{% import 'forms.html' as forms %}
+
+<p>
+<form method='POST'>
+Bookmark name: {{ forms.input('name', name) }}
+<p>
+Sequence: {{ forms.input('sequence', sequence) }}<br>
+Start: {{ forms.input('start', start) }}<br>
+Stop: {{ forms.input('stop', stop) }}<br>
+<p>
+{{ forms.submit('Save bookmark') }}
+</form>

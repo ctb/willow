@@ -25,8 +25,13 @@ from . import bookmarks, db
 
 ###
 
-def jinja_render(page, d):
-    return Template(page).render(d).encode('latin-1', 'replace')
+thisdir = os.path.dirname(__file__)
+templatesdir = os.path.join(thisdir, 'templates')
+templatesdir = os.path.abspath(templatesdir)
+
+loader = jinja2.FileSystemLoader(templatesdir)
+env = jinja2.Environment(loader=loader)
+
 
 def parse_interval_string(db, s):
     seqname, coords = s.split(':')
@@ -58,12 +63,6 @@ class BasicView(Directory):
         genome_name = self.genome_name
         bookmark_l = bookmarks.get_all(session, self.genome_name)
 
-        thisdir = os.path.dirname(__file__)
-        templatesdir = os.path.join(thisdir, 'templates')
-        templatesdir = os.path.abspath(templatesdir)
-        
-        loader = jinja2.FileSystemLoader(templatesdir)
-        env = jinja2.Environment(loader=loader)
         template = env.get_template('BasicView/index.html')
 
         return template.render(locals())
@@ -79,20 +78,8 @@ class BasicView(Directory):
         
         name = form.get('name', '')
         if not name:
-            form = """
-<form method='POST'>
-Bookmark name: <input type='text' name='name'>
-<p>
-Sequence: <input type='text' name='sequence'>
-Start: <input type='text' name='start'>
-Stop: <input type='text' name='stop'>
-<p>
-<input type='submit' value='save'>
-</form>
-"""
-            form = htmlfill.render(form, defaults=locals())
-            page = "{{ form }}"
-            return jinja_render(page, locals())
+            template = env.get_template('BasicView/add_bookmark.html')
+            return template.render(locals())
 
         ###
 
@@ -134,19 +121,8 @@ class IntervalView(Directory):
         l = [ (i, len(nlmsa[ival])) for (i, nlmsa) in enumerate(self.nlmsa_list) ]
 
         qp = quote_plus
-        page = """
-<a href='../'>Return to index</a>
-<p>        
-Interval: {{ ival.id }}[{{ ival.start }}:{{ ival.stop }}]
-<a href='../add_bookmark?sequence={{ qp(ival.id) }}&start={{ ival.start }}&stop={{ ival.stop }}'>(bookmark)</a>
-<p>
-{% for i, n in l %}
-{{ n }} features in nlmsa #{{ i }}<br>
-{% endfor %}
-<hr>
-<image src='./png'>
-"""
-        return jinja_render(page, locals())
+        template = env.get_template('InternalView/index.html')
+        return template.render(locals())
 
     def png(self):
         """

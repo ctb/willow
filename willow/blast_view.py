@@ -46,6 +46,8 @@ class BlastView(Directory):
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (stdout, stderr) = p.communicate(">query\n" + seq)
 
+        print 'BLAST STDERR:', stderr
+
         record = blastparser.parse_string(stdout).next()
         genome_name = self.genome_name
         filepath = self.db.filepath

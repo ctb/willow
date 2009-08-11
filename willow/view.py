@@ -108,6 +108,9 @@ class BasicView(Directory):
             interval = parse_interval_string(self.db, component)
         except ValueError:
             return "no such page"
+        except KeyError:
+            return "no such sequence in '%s'" % (self.genome_name)
+        # make into error component?
         
         return IntervalView(interval, self.nlmsa_list, self.wrappers)
 

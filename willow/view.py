@@ -121,7 +121,14 @@ class IntervalView(Directory):
 
     def _q_index(self):
         ival = self.interval
-        l = [ (i, len(nlmsa[ival])) for (i, nlmsa) in enumerate(self.nlmsa_list) ]
+
+        l = []
+        for i, nlmsa in enumerate(self.nlmsa_list):
+            try:
+                features = nlmsa[ival]
+            except KeyError:
+                features = []
+            l.append((i, len(features)))
 
         qp = quote_plus
         template = env.get_template('InternalView/index.html')

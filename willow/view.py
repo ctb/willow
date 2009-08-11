@@ -13,6 +13,14 @@ try:
     import json
 except ImportError:
     import simplejson as json
+    
+from formencode import htmlfill
+
+###
+
+from . import bookmarks, db
+
+###
 
 def jinja_render(page, d):
     return Template(page).render(d).encode('latin-1', 'replace')
@@ -31,16 +39,84 @@ def parse_interval_string(db, s):
         ival = -ival
     return ival
 
-class BasicView(Directory):
-    _q_exports = ['']
+###
 
-    def __init__(self, db, nlmsa_list, wrappers=None):
+class BasicView(Directory):
+    _q_exports = ['', 'add_bookmark', 'go']
+
+    def __init__(self, genome_name, db, nlmsa_list, wrappers=None):
+        self.genome_name = genome_name
         self.db = db
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
 
     def _q_index(self):
-        return 'hello, world'
+        session = db.get_session()
+        genome_name = self.genome_name
+        bookmark_l = bookmarks.get_all(session, self.genome_name)
+
+
+        page = """
+Viewing genome: {{ genome_name }}
+<p>
+Bookmarks:
+<ul>
+{% for b in bookmark_l %}
+ <li> <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
+        </a><br>
+{% endfor %}
+</ul>
+"""
+        return jinja_render(page, locals())
+
+    def add_bookmark(self):
+        request = quixote.get_request()
+        response = quixote.get_response()
+        form = request.form
+
+        sequence = form.get('sequence')
+        start = int(form.get('start'))
+        stop = int(form.get('stop'))
+        
+        name = form.get('name', '')
+        if not name:
+            form = """
+<form method='POST'>
+Bookmark name: <input type='text' name='name'>
+<p>
+Sequence: <input type='text' name='sequence'>
+Start: <input type='text' name='start'>
+Stop: <input type='text' name='stop'>
+<p>
+<input type='submit' value='save'>
+</form>
+"""
+            form = htmlfill.render(form, defaults=locals())
+            page = "{{ form }}"
+            return jinja_render(page, locals())
+
+        ###
+
+        bookmarks.add_bookmark(name, self.genome_name, sequence, start, stop,
+                               +1)
+
+        url = request.get_url(1)
+        url += '/go?sequence=%s&start=%d&stop=%d' % (quote_plus(sequence),
+                                                    start, stop)
+        return response.redirect(url)
+
+    def go(self):
+        request = quixote.get_request()
+        form = request.form
+        sequence = form.get('sequence')
+        start = int(form.get('start'))
+        stop = int(form.get('stop'))
+
+        response = quixote.get_response()
+
+        url = request.get_url(1)
+        url += '/%s:%s-%s/' % (quote_plus(sequence), start, stop)
+        return response.redirect(url)
     
     def _q_lookup(self, component):
         interval = parse_interval_string(self.db, component)
@@ -58,15 +134,17 @@ class IntervalView(Directory):
         ival = self.interval
         l = [ (i, len(nlmsa[ival])) for (i, nlmsa) in enumerate(self.nlmsa_list) ]
 
+        qp = quote_plus
         page = """
+<a href='../'>Return to index</a>
+<p>        
 Interval: {{ ival.id }}[{{ ival.start }}:{{ ival.stop }}]
+<a href='../add_bookmark?sequence={{ qp(ival.id) }}&start={{ ival.start }}&stop={{ ival.stop }}'>(bookmark)</a>
 <p>
 {% for i, n in l %}
 {{ n }} features in nlmsa #{{ i }}<br>
 {% endfor %}
 <hr>
-Bitmap:
-<p>
 <image src='./png'>
 """
         return jinja_render(page, locals())

@@ -13,6 +13,11 @@ from pygr_draw.annotation import SequenceWrapperFactory
 
 ###
 
+from willow import db
+db.create()
+
+###
+
 import pkg_resources
 pkg_resources.require('pygr')
 
@@ -27,7 +32,7 @@ wrappers = [wrapper_annot, wrapper_annot2]
 
 ###
 
-v = BasicView(db, nlmsa_list, wrappers)
+v = BasicView('example', db, nlmsa_list, wrappers)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

@@ -10,9 +10,9 @@ annodb = annotation.AnnotationDB({}, db, annotationType='annot:',
                                                     stop=2,
                                                     orientation=3))
 
-annodb.new_annotation('foo', ('seq', 0, 5000, 1))
-annodb.new_annotation('bar', ('seq', 2000, 10000, 1))
-annodb.new_annotation('baz', ('seq', 12000, 15000, 1))
+annodb.new_annotation('foo', ('chrI', 0, 5000, 1))
+annodb.new_annotation('bar', ('chrI', 2000, 10000, 1))
+annodb.new_annotation('baz', ('chrI', 12000, 15000, 1))
 
 al = cnestedlist.NLMSA('simple_nlmsa', 'w', pairwiseMode=True)
 for k in annodb:

@@ -32,7 +32,7 @@ wrappers = [wrapper_annot, wrapper_annot2]
 
 ###
 
-v = BasicView('example', db, nlmsa_list, wrappers)
+v = BasicView('creature', db, nlmsa_list, wrappers)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

@@ -1,3 +1,6 @@
+import os.path
+from urllib import quote_plus
+
 import pkg_resources
 pkg_resources.require('Quixote>=2.6')
 pkg_resources.require('pygr-draw>=0.5')
@@ -7,9 +10,6 @@ from quixote.directory import Directory
 
 import pygr_draw
 
-import os.path
-
-from urllib import quote_plus
 try:
     import json
 except ImportError:
@@ -17,7 +17,7 @@ except ImportError:
     
 ###
 
-from . import bookmarks, db
+from . import bookmarks, db, blast_view
 
 ###
 
@@ -40,13 +40,15 @@ def parse_interval_string(db, s):
 ###
 
 class BasicView(Directory):
-    _q_exports = ['', 'add_bookmark', 'go', 'css']
+    _q_exports = ['', 'add_bookmark', 'go', 'css', 'blast']
 
     def __init__(self, genome_name, db, nlmsa_list, wrappers=None):
         self.genome_name = genome_name
         self.db = db
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
+
+        self.blast = blast_view.BlastView(genome_name, db)
 
     def css(self):
         cssfile = os.path.join(templatesdir, 'thin_green_line.css')
@@ -102,7 +104,11 @@ class BasicView(Directory):
         return response.redirect(url)
     
     def _q_lookup(self, component):
-        interval = parse_interval_string(self.db, component)
+        try:
+            interval = parse_interval_string(self.db, component)
+        except ValueError:
+            return "no such page"
+        
         return IntervalView(interval, self.nlmsa_list, self.wrappers)
 
 class IntervalView(Directory):

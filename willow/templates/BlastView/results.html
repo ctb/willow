@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}BLAST results{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+<h2>BLAST matches in genome '{{ genome_name }}'</h2>
+<!-- {{ filepath }} -->
+<blockquote>
+<i>Using {{ prog }}.</i>
+</blockquote>
+<ul>
+{% for hit in record.hits %}
+   {% for submatch in hit %}
+   <li>{{ loop.index }}:
+
+    <a href='../../go?sequence={{ hit.subject_name|e }}&start={{ submatch.subject_start }}&stop={{ submatch.subject_end }}'>{{ hit.subject_name }}:{{ submatch.subject_start }}-{{ submatch.subject_end }}
+
+    <i>{{ submatch.expect }}</i></a> </li>
+   {% endfor %}
+{% endfor %}
+</ul>
+{% endblock %}

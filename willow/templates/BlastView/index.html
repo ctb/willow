@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import 'forms.html' as forms %}
+
+{% block title %}BLAST search: {{ genome_name }}{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+<h2>BLAST search: genome '{{ genome_name }}'</h2>
+<blockquote>
+Enter a sequence to search for, below:
+<form method='POST' action='do_blast'>
+{{ forms.textarea('seq') }}
+<p>
+{{ forms.submit('go search!') }}
+<p>
+(Do you want me to do a translated search?
+<select name='do_translate'>
+<option value=''> Maybe&nbsp;
+<option value='1'> Yes
+<option value='0'> No
+</select>)
+</form>
+</blockquote>
+{% endblock %}

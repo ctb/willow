@@ -28,8 +28,8 @@ class Bookmark(Base):
 
 def create_a_bunch(session):
     session.add_all([
-        Bookmark('a small bit', 'example', 'seq', 10, 500, +1),
-        Bookmark('entire seq', 'example', 'seq', 0, 50000, +1)
+        Bookmark('a small bit', 'creature', 'chrI', 10, 500, +1),
+        Bookmark('entire seq', 'creature', 'chrI', 0, 50000, +1)
         ])
 
 def add_bookmark(name, genome, sequence, start, stop, orientation,

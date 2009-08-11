@@ -47,7 +47,12 @@ wrapper_list = [wrapper_est, wrapper_read]
 
 ###
 
-v = BasicView(sc, nlmsa_list, wrapper_list)
+from willow import db
+db.create()
+
+###
+
+v = BasicView('lamprey', sc, nlmsa_list, wrapper_list)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

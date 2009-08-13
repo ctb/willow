@@ -13,7 +13,21 @@
 
 <li>{{ ival.stop - ival.start }} bases of {{ parent_len }}</li>
 
-<li> <form method='POST' action='../go'>
+<li>
+<a href='../go?sequence={{ ival.id|e }}&start={{ move_left_start }}&stop={{ move_left_stop }}'>&lt;- move left</a> or
+
+<a href='../go?sequence={{ ival.id|e }}&start={{ zoom_in_start }}&stop={{ zoom_in_stop }}'>+ zoom in +</a>
+or
+<a href='../go?sequence={{ ival.id|e }}&start={{ zoom_out_start }}&stop={{ zoom_out_stop }}'>- zoom out -</a>
+
+or
+
+<a href='../go?sequence={{ ival.id|e }}&start={{ move_right_start }}&stop={{ move_right_stop }}'>move right -&gt;</a>
+
+</li>
+
+<li>
+<form method='POST' action='../go'>
 {{ forms.submit('view') }}
 {{ forms.input('sequence', value=ival.id) }} from {{ forms.input('start', value=ival.start, size=9) }} to
 {{ forms.input('stop', value=ival.stop, size=9) }}

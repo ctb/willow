@@ -195,6 +195,18 @@ class IntervalView(Directory):
         ival = self.interval
         parent_len = len(ival.pathForward)
 
+        move_left_start = max(ival.start - len(ival)/2, 0)
+        move_left_stop = min(move_left_start + len(ival), parent_len)
+
+        move_right_stop = min(parent_len, ival.stop + len(ival)/2)
+        move_right_start = max(0, move_right_stop - len(ival))
+
+        zoom_out_start = max(ival.start - len(ival)/2, 0)
+        zoom_out_stop = min(parent_len, ival.stop + len(ival)/2)
+        
+        zoom_in_start = ival.start + len(ival) / 4
+        zoom_in_stop = ival.stop - len(ival) / 4
+
         l = []
         for i, nlmsa in enumerate(self.nlmsa_list):
             try:

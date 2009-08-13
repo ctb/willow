@@ -18,21 +18,34 @@ pkg_resources.require('pygr')
 
 from pygr import seqdb, cnestedlist
 from pygr_draw.annotation import SequenceWrapperFactory
+from pygr_draw.annotation import FeatureWrapperFactory
 
+class IntIDWrapperFactory(FeatureWrapperFactory):
+    def __call__(self, feature):
+        d = dict(self.values)
+        d['name'] = str(feature.name)
+        return self.klass(self, feature, d)
+    
 ###
 
 # load in the NLMSAs
 
 #chick_genome = seqdb.SequenceFileDB('/scratch/titus/chick/chick.masked.fa')
 
+refgene_filename = '/scratch/titus/chick/refGene.al'
+refgenes = cnestedlist.NLMSA(refgene_filename)
+wrapper_ref = IntIDWrapperFactory(color='red')
+
 reads_filename = '/scratch/titus/chick/subram28/result14.al'
 al2 = cnestedlist.NLMSA(reads_filename)
 wrapper_read = SequenceWrapperFactory(name='')
 
 chick_genome = al2.seqDict.prefixDict['chick']
+refgenes.seqDict.prefixDict['chick'] = chick_genome
+refgenes.seqDict.dicts[chick_genome] = 'chick'
 
-nlmsa_list = [al2]
-wrapper_list = [wrapper_read]
+nlmsa_list = [refgenes, al2]
+wrapper_list = [wrapper_ref, wrapper_read]
 
 ###
 

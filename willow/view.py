@@ -295,6 +295,7 @@ class IntervalView(Directory):
                 counts.append(count)
             
             overlaps_l.append((name, counts))
+            print name, counts
 
         names = [ e['name'] for e in self.extra_info ]
         names[0] = '(bookmarks)'

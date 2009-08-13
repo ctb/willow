@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import _mypath
+import sys
 
 PORT=8000
 
@@ -58,11 +59,14 @@ extra_info = [ dict(name='ESTs'),
 ###
 
 from willow import db
-db.create()
+if len(sys.argv) == 2:
+    db.create(sys.argv[1])
+else:
+    db.create()
 
 ###
 
-v = BasicView('lamprey', sc, nlmsa_list, wrapper_list)
+v = BasicView('lamprey', sc, nlmsa_list, wrapper_list, extra_info)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

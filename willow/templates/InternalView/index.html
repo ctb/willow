@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+{% import 'forms.html' as forms %}
 
 {% block title %}Viewing interval: {{ ival.id }}:{{ ival.start }}-{{ ival.stop }}{% endblock %}
 
 {% block sidebar %}
-<a href='../'>Return to index</a>
+<a href='../'>Return to top page</a>
 {% endblock %}
 
 {% block content %}
@@ -11,6 +12,13 @@
 <h2>Interval: {{ ival.id }} from {{ ival.start }} to {{ ival.stop }}</h2>
 
 <li>{{ ival.stop - ival.start }} bases of {{ parent_len }}</li>
+
+<li> <form method='POST' action='../go'>
+{{ forms.submit('view') }}
+{{ forms.input('sequence', value=ival.id) }} from {{ forms.input('start', value=ival.start, size=9) }} to
+{{ forms.input('stop', value=ival.stop, size=9) }}
+</form>
+</li>
 
 <p>
 <blockquote>

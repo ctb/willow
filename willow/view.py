@@ -18,7 +18,30 @@ except ImportError:
 ###
 
 from . import bookmarks, db, blast_view
+from pygr import annotation, cnestedlist
+from pygr_draw.annotation import FeatureWrapperFactory
 
+def bookmarks_to_nlmsa(bookmarks_l, genome_db):
+    d = dict([ (b.name, b) for b in bookmarks_l ])
+    annodb = annotation.AnnotationDB(d, genome_db, annotationType='mark:',
+                                     sliceAttrDict=dict(id='sequence',
+                                                        start='start',
+                                                        stop='stop',
+                                                        orientation='orientation'))
+
+    al = cnestedlist.NLMSA('foo', mode='memory', pairwiseMode=True)
+    for k in annodb:
+        al.addAnnotation(annodb[k])
+    al.build()
+
+    return al
+
+class BookmarkWrapperFactory(FeatureWrapperFactory):
+    def __call__(self, feature):
+        d = dict(self.values)
+        d['name'] = 'b:' + feature.name
+        return self.klass(self, feature, d)
+    
 ###
 
 from .web_util import env, templatesdir
@@ -42,13 +65,17 @@ def parse_interval_string(db, s):
 class BasicView(Directory):
     _q_exports = ['', 'add_bookmark', 'go', 'css', 'blast']
 
-    def __init__(self, genome_name, db, nlmsa_list, wrappers=None):
+    def __init__(self, genome_name, genome_db, nlmsa_list, wrappers=None):
         self.genome_name = genome_name
-        self.db = db
+        self.genome_db = genome_db
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
 
-        self.blast = blast_view.BlastView(genome_name, db)
+        self.blast = blast_view.BlastView(genome_name, genome_db)
+
+        self.session = db.get_session()
+        self.bookmarks_l = bookmarks.get_all(self.session, genome_name)
+        self.bookmarks_al = bookmarks_to_nlmsa(self.bookmarks_l, genome_db)
 
     def css(self):
         cssfile = os.path.join(templatesdir, 'thin_green_line.css')
@@ -58,9 +85,8 @@ class BasicView(Directory):
         return open(cssfile).read()
 
     def _q_index(self):
-        session = db.get_session()
         genome_name = self.genome_name
-        bookmark_l = bookmarks.get_all(session, self.genome_name)
+        bookmarks_l = self.bookmarks_l
 
         template = env.get_template('BasicView/index.html')
 
@@ -105,13 +131,19 @@ class BasicView(Directory):
     
     def _q_lookup(self, component):
         try:
-            interval = parse_interval_string(self.db, component)
+            interval = parse_interval_string(self.genome_db, component)
         except ValueError:
             return ErrorView("No such page.")
         except KeyError:
             return ErrorView("No such sequence in '%s'" % (self.genome_name,))
+
+        nlmsa_list = [self.bookmarks_al]
+        nlmsa_list.extend(self.nlmsa_list)
+
+        wrappers = [BookmarkWrapperFactory(color='green')]
+        wrappers.extend(self.wrappers)
         
-        return IntervalView(interval, self.nlmsa_list, self.wrappers)
+        return IntervalView(interval, nlmsa_list, wrappers)
 
 class IntervalView(Directory):
     _q_exports = ['', 'png', 'json']
@@ -131,6 +163,7 @@ class IntervalView(Directory):
             except KeyError:
                 features = []
             l.append((i, len(features)))
+            print i, len(features)
 
         qp = quote_plus
         template = env.get_template('InternalView/index.html')

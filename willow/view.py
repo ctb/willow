@@ -146,13 +146,24 @@ class BasicView(Directory):
     def go(self):
         request = quixote.get_request()
         form = request.form
-        sequence = form.get('sequence')
-        start = int(form.get('start'))
-        stop = int(form.get('stop'))
-
+        url = request.get_url(1)
         response = quixote.get_response()
 
-        url = request.get_url(1)
+        sequence = form.get('sequence')
+
+        start = form.get('start')
+        if not start:
+            start = 0
+        start = int(start)
+
+        try:
+            stop = form.get('stop')
+            if not stop:
+                stop = len(self.genome_db[sequence])
+            stop = int(stop)
+        except KeyError:
+            return response.redirect(url)
+
         url += '/%s:%s-%s/' % (quote_plus(sequence), start, stop)
         return response.redirect(url)
     
@@ -182,6 +193,7 @@ class IntervalView(Directory):
 
     def _q_index(self):
         ival = self.interval
+        parent_len = len(ival.pathForward)
 
         l = []
         for i, nlmsa in enumerate(self.nlmsa_list):

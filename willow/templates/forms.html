@@ -1,5 +1,5 @@
-{% macro input(name, value='', type='text') -%}
-    <input type="{{ type }}" value="{{ value|e }}" name="{{ name }}">
+{% macro input(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" value="{{ value|e }}" name="{{ name }}" size="{{ size }}">
 {%- endmacro %}
 
 {% macro submit(value) -%}

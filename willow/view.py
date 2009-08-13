@@ -185,16 +185,23 @@ class BasicView(Directory):
         extra_info = [dict(name='__bookmarks__')]
         extra_info.extend(self.extra_info)
         
-        return IntervalView(interval, nlmsa_list, wrappers, extra_info)
+        return IntervalView(self.genome_name, interval, nlmsa_list, wrappers, extra_info)
 
 class IntervalView(Directory):
     _q_exports = ['', 'png', 'json', 'quantify']
 
-    def __init__(self, interval, nlmsa_list, wrappers, extra_info):
+    def __init__(self, genome_name, interval, nlmsa_list, wrappers, extra_info):
+        self.genome_name = genome_name
         self.interval = interval
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
         self.extra_info = extra_info
+        
+        self.session = db.get_session()
+        self._load_bookmarks()
+
+    def _load_bookmarks(self):
+        self.bookmarks_l = bookmarks.get_all(self.session, self.genome_name)
 
     def _q_index(self):
         ival = self.interval
@@ -211,6 +218,8 @@ class IntervalView(Directory):
         
         zoom_in_start = ival.start + len(ival) / 4
         zoom_in_stop = ival.stop - len(ival) / 4
+
+        bookmarks_l = self.bookmarks_l
 
         l = []
         for i, nlmsa in enumerate(self.nlmsa_list):

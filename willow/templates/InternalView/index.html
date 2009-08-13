@@ -5,6 +5,20 @@
 
 {% block sidebar %}
 <a href='../'>Return to top page</a>
+
+{% if bookmarks_l %}
+<p>
+<b>Bookmarks:</b>
+<ul>
+  {% for b in bookmarks_l %}
+   #{{ loop.index }}. <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
+          </a>
+  <br>
+  {% endfor %}
+</ul>
+{% endif %}
+
+
 {% endblock %}
 
 {% block content %}

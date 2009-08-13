@@ -31,7 +31,12 @@ wrapper_est = SequenceWrapperFactory(color='red')
 
 reads_filename = '/u/t/dev/lamprey-est-map/data/brain-rnaseq/lamprey30M2H/s_1_al-trim3-20'
 al2 = cnestedlist.NLMSA(reads_filename)
-wrapper_read = SequenceWrapperFactory(name='')
+wrapper_read2 = SequenceWrapperFactory(name='', color='green')
+
+reads_filename = '/u/t/dev/lamprey-est-map/data/liver-rnaseq/lamprey3102H/s_1_al-trim3-20'
+al3 = cnestedlist.NLMSA(reads_filename)
+wrapper_read3 = SequenceWrapperFactory(name='', color='blue')
+
 
 # because we're not using pygr.Data, the NLMSAs have different seqdbs
 # for the supercontigs.  We have to munge them to make them the same
@@ -39,11 +44,13 @@ wrapper_read = SequenceWrapperFactory(name='')
 sc = al1.seqDict.prefixDict['supercontigs']
 al2.seqDict.prefixDict['supercontigs'] = al1.seqDict.prefixDict['supercontigs']
 al2.seqDict.dicts[sc] = 'supercontigs'
+al3.seqDict.prefixDict['supercontigs'] = al1.seqDict.prefixDict['supercontigs']
+al3.seqDict.dicts[sc] = 'supercontigs'
 
 #contig1 = al1.seqDict['supercontigs.Contig0'][:500000]
 
-nlmsa_list = [al1, al2]
-wrapper_list = [wrapper_est, wrapper_read]
+nlmsa_list = [al1, al2, al3]
+wrapper_list = [wrapper_est, wrapper_read2, wrapper_read3]
 
 ###
 

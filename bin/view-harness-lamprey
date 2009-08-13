@@ -51,6 +51,9 @@ al3.seqDict.dicts[sc] = 'supercontigs'
 
 nlmsa_list = [al1, al2, al3]
 wrapper_list = [wrapper_est, wrapper_read2, wrapper_read3]
+extra_info = [ dict(name='ESTs'),
+               dict(name='brain RNAseq'),
+               dict(name='liver RNAseq') ]
 
 ###
 

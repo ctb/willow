@@ -33,10 +33,11 @@ nlmsa_list = [nlmsa, nlmsa]
 wrapper_annot = SequenceWrapperFactory(color='red')
 wrapper_annot2 = SequenceWrapperFactory(color='blue')
 wrappers = [wrapper_annot, wrapper_annot2]
+extra_info = [ dict(name='nlmsa 1'), dict(name='nlmsa 2') ]
 
 ###
 
-v = BasicView('creature', db, nlmsa_list, wrappers)
+v = BasicView('creature', db, nlmsa_list, wrappers, extra_info)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

@@ -70,11 +70,12 @@ def parse_interval_string(db, s):
 class BasicView(Directory):
     _q_exports = ['', 'add_bookmark', 'go', 'css', 'blast', 'delete_bookmark']
 
-    def __init__(self, genome_name, genome_db, nlmsa_list, wrappers=None):
+    def __init__(self, genome_name, genome_db, nlmsa_list, wrappers=None, extra_info=None):
         self.genome_name = genome_name
         self.genome_db = genome_db
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
+        self.extra_info = extra_info
 
         self.blast = blast_view.BlastView(genome_name, genome_db)
         self.session = db.get_session()
@@ -180,16 +181,20 @@ class BasicView(Directory):
 
         wrappers = [BookmarkWrapperFactory()]
         wrappers.extend(self.wrappers)
+
+        extra_info = [dict(name='__bookmarks__')]
+        extra_info.extend(self.extra_info)
         
-        return IntervalView(interval, nlmsa_list, wrappers)
+        return IntervalView(interval, nlmsa_list, wrappers, extra_info)
 
 class IntervalView(Directory):
-    _q_exports = ['', 'png', 'json']
+    _q_exports = ['', 'png', 'json', 'quantify']
 
-    def __init__(self, interval, nlmsa_list, wrappers):
+    def __init__(self, interval, nlmsa_list, wrappers, extra_info):
         self.interval = interval
         self.nlmsa_list = nlmsa_list
         self.wrappers = wrappers
+        self.extra_info = extra_info
 
     def _q_index(self):
         ival = self.interval
@@ -246,6 +251,26 @@ class IntervalView(Directory):
                                              wrappers=self.wrappers)
         l = pic.finalize()
         return json.dumps(l)
+
+    def quantify(self):
+        ival = self.interval
+
+        counts = []
+        names = []
+        for (nlmsa, info) in zip(self.nlmsa_list[1:], self.extra_info[1:]):
+            count = 0
+            try:
+                slice = nlmsa[ival]
+                count += len(slice)
+            except (KeyError, TypeError):
+                pass
+            counts.append(count)
+            names.append(info.get('name', '** no name **'))
+
+        combined = zip(names, counts)
+
+        template = env.get_template('InternalView/quantify.html')
+        return template.render(locals())
 
 class ErrorView(Directory):
     _q_exports = ['']

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}We like numbers{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+<h2>Number of features in interval:</h2>
+
+<blockquote>
+<Table>
+<tr><th>Data</th><th>Number of features</th></tr>
+{% for name, count in combined %}
+  <tr><td align='left'>{{ name }}</td> <td align='center'>{{ count }}</td></tr>
+{% endfor %}
+</table>
+</blockquote>
+
+{% endblock %}

@@ -188,7 +188,7 @@ class BasicView(Directory):
         return IntervalView(self.genome_name, interval, nlmsa_list, wrappers, extra_info)
 
 class IntervalView(Directory):
-    _q_exports = ['', 'png', 'json', 'quantify']
+    _q_exports = ['', 'png', 'json', 'quantify', 'overlaps']
 
     def __init__(self, genome_name, interval, nlmsa_list, wrappers, extra_info):
         self.genome_name = genome_name
@@ -260,6 +260,47 @@ class IntervalView(Directory):
                                              wrappers=self.wrappers)
         l = pic.finalize()
         return json.dumps(l)
+
+    def overlaps(self):
+        request = quixote.get_request()
+        datasource = int(request.form['datasource'])
+
+        ival = self.interval
+        nlmsa = self.nlmsa_list[datasource]
+        wrapper = self.wrappers[datasource]
+        info = self.extra_info[datasource]
+
+        try:
+            slice = nlmsa[ival]
+        except (KeyError, TypeError):
+            message = "No matches to %s in interval." % (quote_plus(info['name']),)
+            template = env.get_template('error.html')
+            return template.render(locals())
+        
+        overlaps_l = []
+        for feature in slice:
+            if wrapper:
+                feature = wrapper(feature)
+                
+            name = feature.name
+            counts = []
+            
+            for n, nlmsa in enumerate(self.nlmsa_list):
+                try:
+                    slice2 = nlmsa[ival]
+                    count = len(slice2)
+                except (KeyError, TypeError):
+                    count = 0
+
+                counts.append(count)
+            
+            overlaps_l.append((name, counts))
+
+        names = [ e['name'] for e in self.extra_info ]
+        names[0] = '(bookmarks)'
+
+        template = env.get_template('InternalView/overlaps.html')
+        return template.render(locals())
 
     def quantify(self):
         ival = self.interval

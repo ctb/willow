@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}We like numbers{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+<h2>Counting overlaps with '{{ names[datasource] }}':</h2>
+
+Interval {{ ival.id }}:[{{ ival.start }}-{{ ival.stop }}]
+<p>
+
+<blockquote>
+<table border='1'>
+<tr>
+<th>Feature name</th>
+{% for nlmsa_name in names %}
+  <th>{{ nlmsa_name }}</th>
+{% endfor %}
+</tr>
+
+{% for (feature_name, counts) in overlaps_l %}
+  <tr><td align='left'>{{ feature_name }}</td>
+
+  {% for count in counts %}
+     <td align='center'>{{ count }}</td>
+  {% endfor %}
+  </tr>
+{% endfor %}
+</table>
+</blockquote>
+
+{% endblock %}

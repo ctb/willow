@@ -10,9 +10,12 @@
 
 <blockquote>
 <Table>
-<tr><th align='left'>Datasource</th><th>Number of features</th></tr>
+<tr><th align='left'>Datasource /</th><th>Number of features</th></tr>
 {% for name, count in combined %}
-  <tr><td align='left'>{{ name }}</td> <td align='center'>{{ count }}</td></tr>
+  <tr><td align='left'>{{ name }}</td>
+      <td align='center'>{{ count }}</td>
+      <td align='right'><A href='overlaps?datasource={{ loop.index }}'>count overlaps</a></td>
+  </tr>
 {% endfor %}
 </table>
 </blockquote>

@@ -46,6 +46,7 @@ refgenes.seqDict.dicts[chick_genome] = 'chick'
 
 nlmsa_list = [refgenes, al2]
 wrapper_list = [wrapper_ref, wrapper_read]
+extra_info = [ dict(name='RefSeq genes'), dict(name='DF1_Meq ChIP-seq') ]
 
 ###
 
@@ -57,7 +58,7 @@ else:
 
 ###
 
-v = BasicView('chick', chick_genome, nlmsa_list, wrapper_list)
+v = BasicView('chick', chick_genome, nlmsa_list, wrapper_list, extra_info)
 p = Publisher(v, display_exceptions='plain')
 p.is_thread_safe = True
 

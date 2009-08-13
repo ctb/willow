@@ -18,7 +18,8 @@ except ImportError:
 ###
 
 from . import bookmarks, db, blast_view
-from pygr import annotation, cnestedlist
+from .bookmarks import Bookmark
+from pygr import annotation, cnestedlist, nlmsa_utils
 from pygr_draw.annotation import FeatureWrapperFactory
 
 def bookmarks_to_nlmsa(bookmarks_l, genome_db):
@@ -32,7 +33,11 @@ def bookmarks_to_nlmsa(bookmarks_l, genome_db):
     al = cnestedlist.NLMSA('foo', mode='memory', pairwiseMode=True)
     for k in annodb:
         al.addAnnotation(annodb[k])
-    al.build()
+
+    try:
+        al.build()
+    except nlmsa_utils.EmptyAlignmentError:
+        al = None
 
     return al
 
@@ -63,7 +68,7 @@ def parse_interval_string(db, s):
 ###
 
 class BasicView(Directory):
-    _q_exports = ['', 'add_bookmark', 'go', 'css', 'blast']
+    _q_exports = ['', 'add_bookmark', 'go', 'css', 'blast', 'delete_bookmark']
 
     def __init__(self, genome_name, genome_db, nlmsa_list, wrappers=None):
         self.genome_name = genome_name
@@ -72,10 +77,13 @@ class BasicView(Directory):
         self.wrappers = wrappers
 
         self.blast = blast_view.BlastView(genome_name, genome_db)
-
         self.session = db.get_session()
-        self.bookmarks_l = bookmarks.get_all(self.session, genome_name)
-        self.bookmarks_al = bookmarks_to_nlmsa(self.bookmarks_l, genome_db)
+
+        self._load_bookmarks()
+
+    def _load_bookmarks(self):
+        self.bookmarks_l = bookmarks.get_all(self.session, self.genome_name)
+        self.bookmarks_al = bookmarks_to_nlmsa(self.bookmarks_l, self.genome_db)
 
     def css(self):
         cssfile = os.path.join(templatesdir, 'thin_green_line.css')
@@ -100,6 +108,7 @@ class BasicView(Directory):
         sequence = form.get('sequence')
         start = int(form.get('start'))
         stop = int(form.get('stop'))
+        color = form.get('color', 'green')
         
         name = form.get('name', '')
         if not name:
@@ -109,12 +118,30 @@ class BasicView(Directory):
         ###
 
         bookmarks.add_bookmark(name, self.genome_name, sequence, start, stop,
-                               +1)
+                               +1, color)
+
+        self._load_bookmarks()
 
         url = request.get_url(1)
         url += '/go?sequence=%s&start=%d&stop=%d' % (quote_plus(sequence),
                                                     start, stop)
         return response.redirect(url)
+
+    def delete_bookmark(self):
+        request = quixote.get_request()
+        response = quixote.get_response()
+        form = request.form
+
+        bookmark_id = int(form['bookmark_id'])
+
+        session = db.get_session()
+        b = session.query(Bookmark).filter(Bookmark.id==bookmark_id).first()
+        session.delete(b)
+        session.commit()
+
+        self._load_bookmarks()
+
+        return response.redirect(request.get_url(1))
 
     def go(self):
         request = quixote.get_request()
@@ -140,7 +167,7 @@ class BasicView(Directory):
         nlmsa_list = [self.bookmarks_al]
         nlmsa_list.extend(self.nlmsa_list)
 
-        wrappers = [BookmarkWrapperFactory(color='green')]
+        wrappers = [BookmarkWrapperFactory()]
         wrappers.extend(self.wrappers)
         
         return IntervalView(interval, nlmsa_list, wrappers)
@@ -160,7 +187,7 @@ class IntervalView(Directory):
         for i, nlmsa in enumerate(self.nlmsa_list):
             try:
                 features = nlmsa[ival]
-            except KeyError:
+            except (KeyError, TypeError):
                 features = []
             l.append((i, len(features)))
             print i, len(features)

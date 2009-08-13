@@ -14,14 +14,17 @@ class Bookmark(Base):
     start = Column(Integer)
     stop = Column(Integer)
     orientation = Column(Integer)
+    color = Column(String(100))
 
-    def __init__(self, name, genome, sequence, start, stop, orientation):
+    def __init__(self, name, genome, sequence, start, stop, orientation,
+                 color='green'):
         self.name = name
         self.genome = genome
         self.sequence = sequence
         self.start = start
         self.stop = stop
         self.orientation = orientation
+        self.color = color
 
     def __repr__(self):
         return "<Bookmark(%d, '%s', ...)>" % (self.id, self.name)
@@ -35,12 +38,12 @@ def create_a_bunch(session):
         ])
 
 def add_bookmark(name, genome, sequence, start, stop, orientation,
-                 session=None):
+                 color, session=None):
     commit = False
     if session is None:
         commit = True
         session = db.get_session()
-    b = Bookmark(name, genome, sequence, start, stop, orientation)
+    b = Bookmark(name, genome, sequence, start, stop, orientation, color)
     session.add(b)
 
     if commit:

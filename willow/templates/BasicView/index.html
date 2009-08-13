@@ -9,7 +9,7 @@
 <ul>
 {% for b in bookmarks_l %}
  <li> <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
-        </a> - {{ b.sequence }}:{{ b.start }}-{{ b.stop }}, {{ b.stop - b.start }} bases
+        </a> - {{ b.sequence }}:{{ b.start }}-{{ b.stop }}, {{ b.stop - b.start }} bases <a href='delete_bookmark?bookmark_id={{ b.id }}'><i><font size='-2'>[ delete ]</font></i></a>
 </li>
 {% endfor %}
 </ul>

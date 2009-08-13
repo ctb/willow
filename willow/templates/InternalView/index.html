@@ -11,7 +11,7 @@
 <b>Bookmarks:</b>
 <ul>
   {% for b in bookmarks_l %}
-   #{{ loop.index }}. <a href='./{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
+   #{{ loop.index }}. <a href='../{{ b.sequence }}:{{ b.start }}-{{ b.stop }}/'> {{ b.name }}
           </a>
   <br>
   {% endfor %}

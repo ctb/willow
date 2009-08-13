@@ -1,0 +1,54 @@
+#! /usr/bin/env python
+import _mypath
+import sys
+
+PORT=8000
+
+###
+
+from willow.view import BasicView
+from quixote.publish import Publisher
+from quixote import get_wsgi_app
+from wsgiref.simple_server import make_server
+
+###
+
+import pkg_resources
+pkg_resources.require('pygr')
+
+from pygr import seqdb, cnestedlist
+from pygr_draw.annotation import SequenceWrapperFactory
+
+###
+
+# load in the NLMSAs
+
+#chick_genome = seqdb.SequenceFileDB('/scratch/titus/chick/chick.masked.fa')
+
+reads_filename = '/scratch/titus/chick/subram28/result14.al'
+al2 = cnestedlist.NLMSA(reads_filename)
+wrapper_read = SequenceWrapperFactory(name='')
+
+chick_genome = al2.seqDict.prefixDict['chick']
+
+nlmsa_list = [al2]
+wrapper_list = [wrapper_read]
+
+###
+
+from willow import db
+if len(sys.argv) == 2:
+    db.create(sys.argv[1])
+else:
+    db.create()
+
+###
+
+v = BasicView('chick', chick_genome, nlmsa_list, wrapper_list)
+p = Publisher(v, display_exceptions='plain')
+p.is_thread_safe = True
+
+httpd = make_server('', PORT, get_wsgi_app())
+print 'serving on port %d' % (PORT,)
+
+httpd.serve_forever()

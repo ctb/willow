@@ -1,0 +1,75 @@
+#! /usr/bin/env python
+import _mypath
+import sys
+
+PORT=8000
+
+###
+
+from willow.view import BasicView
+from quixote.publish import Publisher
+from quixote import get_wsgi_app
+from wsgiref.simple_server import make_server
+from pygr_draw.annotation import FeatureWrapperFactory
+
+###
+
+from willow import db
+if len(sys.argv) == 2:
+    db.create(sys.argv[1], create_a_bunch=False)
+else:
+    db.create(create_a_bunch=False)
+
+###
+
+import pkg_resources
+pkg_resources.require('pygr')
+
+from pygr import worldbase
+campy = worldbase.Bio.bags.campy
+
+genome = campy.genome()
+gene_map = campy.gene_map()
+
+# worldbase.Bio.campy.snp4(), worldbase.Bio.campy.snp6(),
+#minus46 = worldbase.Bio.campy.minus46()
+#minus64 = worldbase.Bio.campy.minus64()
+
+#snpstuff = []
+
+from pygr_draw import nlmsa
+from pygr_draw.xyplot import SpanValue, SpanMap, build_span_value_list
+
+chr = genome['gi|30407139|emb|AL111168.1|']
+
+#sv_list = build_span_value_list(chr, minus46, 100)
+#msa = nlmsa.create_annotation_map(sv_list, genome)
+#minus_46_hist = SpanMap(msa, height=3, line_color='red', fill_color='red')
+
+#sv_list = build_span_value_list(chr, minus64, 100)
+#msa = nlmsa.create_annotation_map(sv_list, genome)
+#minus_64_hist = SpanMap(msa, height=3, line_color='green', fill_color='green')
+
+#snpstuff.append(minus46)
+#snpstuff.append(minus_46_hist)
+#snpstuff.append(minus64)
+#snpstuff.append(minus_64_hist)
+
+nlmsa_list = [ gene_map ] #+ snpstuff
+wrappers = [ None ]
+# + [ FeatureWrapperFactory(color='red'),
+#                        None,
+#                        FeatureWrapperFactory(color='green'),
+#                        None ]
+extra_info = [ dict(name='genes') ]
+
+###
+
+v = BasicView('Campylobacter jejuni', genome, nlmsa_list, wrappers, extra_info)
+p = Publisher(v, display_exceptions='plain')
+p.is_thread_safe = True
+
+httpd = make_server('', PORT, get_wsgi_app())
+print 'serving on port %d' % (PORT,)
+
+httpd.serve_forever()

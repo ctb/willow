@@ -96,6 +96,10 @@ class BasicView(Directory):
     def _q_index(self):
         genome_name = self.genome_name
         bookmarks_l = self.bookmarks_l
+        
+        sequence_list = self.genome_db.keys()
+        sequence_list.sort()
+        sequence_list = sequence_list[:5]
 
         template = env.get_template('BasicView/index.html')
 
@@ -238,7 +242,8 @@ class IntervalView(Directory):
         """
         Draw & return a png for the given interval / NLMSAs.
         """
-        picture_class = pygr_draw.BitmapSequencePicture
+        from pygr_draw.BitmapSequencePicture import BitmapSequencePicture
+        picture_class = BitmapSequencePicture
         pic = pygr_draw.draw_annotation_maps(self.interval,
                                              self.nlmsa_list,
                                              picture_class=picture_class,
@@ -278,21 +283,29 @@ class IntervalView(Directory):
             return template.render(locals())
         
         overlaps_l = []
-        for feature in slice:
+        for (feature, _, _) in slice.edges():
+            orig_feature = feature
             if wrapper:
-                feature = wrapper(feature)
+                feature = wrapper(orig_feature)
                 
             name = feature.name
+            try:
+                feature_ival = orig_feature.sequence
+            except AttributeError:
+                feature_ival = orig_feature
+
             counts = []
-            
-            for n, nlmsa in enumerate(self.nlmsa_list):
+            for n, (nlmsa, e) in enumerate(zip(self.nlmsa_list, self.extra_info)):
                 try:
-                    slice2 = nlmsa[ival]
+                    slice2 = nlmsa[feature_ival]
                     count = len(slice2)
+                    print e['name'], repr(feature_ival),
+                    for jj in slice2:
+                        print repr(jj),
                 except (KeyError, TypeError):
                     count = 0
 
-                counts.append(count)
+                counts.append((count, e['name']))
             
             overlaps_l.append((name, counts))
             print name, counts

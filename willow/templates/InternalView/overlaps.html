@@ -23,7 +23,7 @@ Interval {{ ival.id }}:[{{ ival.start }}-{{ ival.stop }}]
 {% for (feature_name, counts) in overlaps_l %}
   <tr><td align='left'>{{ feature_name }}</td>
 
-  {% for count in counts %}
+  {% for (count, nlmsa_name) in counts %}
      <td align='center'>{{ count }}</td>
   {% endfor %}
   </tr>

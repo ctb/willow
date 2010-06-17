@@ -17,6 +17,13 @@ Sequence {{ forms.input('sequence') }} from {{ forms.input('start', size=9) }} t
 </li>
 </ul>
 
+<h2>Sequences:</h2>
+<ul>
+  {% for name in sequence_list %}
+     <li> <a href='./{{ name }}:0-1000/'>{{ name }}, 1-1000
+  {% endfor %}
+</ul>
+
 {% if bookmarks_l %}
 <h2>Bookmarks:</h2>
 <ul>

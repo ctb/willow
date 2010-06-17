@@ -17,7 +17,7 @@ def make_engine(uri):
 def get_session():
     return _Session()
 
-def create(uri='sqlite:///:memory:'):
+def create(uri='sqlite:///:memory:', create_a_bunch=True):
     from . import bookmarks
 
     engine, _ = make_engine(uri)
